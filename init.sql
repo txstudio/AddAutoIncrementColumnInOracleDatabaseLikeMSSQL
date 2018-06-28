@@ -1,0 +1,24 @@
+/* 建立序列 (sequence) 與資料表 (table) */
+CREATE SEQUENCE "SYSTEM"."EVENT_SEQ"
+	START WITH 1 
+	INCREMENT BY 1;	
+
+CREATE TABLE "SYSTEM"."EVENT_LOGS"
+(
+	"No"			INT,
+    "StatusCode"	INT,
+    "EventTime"		TIMESTAMP WITH TIME ZONE DEFAULT(SYSDATE),
+    "Content"		CLOB,
+    
+    CONSTRAINT "pk_EVENT_LOGS" PRIMARY KEY ("No")
+);	
+
+	
+/* 建立取得序列內容的觸發程序 (trigger) */
+CREATE OR REPLACE TRIGGER "SYSTEM"."TRG_EVENT_LOGS_SEQ"
+	BEFORE INSERT ON "SYSTEM"."EVENT_LOGS"
+	FOR EACH ROW WHEN (new."No" IS NULL) 
+BEGIN
+    SELECT "SYSTEM"."EVENT_SEQ".NEXTVAL 
+    INTO :new."No" FROM DUAL;
+END;
